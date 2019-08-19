@@ -11,7 +11,10 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   user.associate = function(models) {
     // associations can be defined here
-    user.hasMany(models.dorm);
+    user.hasMany(models.dorm, {
+      as: 'dormsList',
+      foreignKey: 'owner'
+    });
   };
 
   user.authenticate = async (username, password) => {
@@ -24,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   user.authorize = async (userId) => {
-    const token = await jwt.sign({userId}, 'secret-key-mamikost');
+    const token = await jwt.sign({userId}, 'mamikost-key');
     const userData = await user.findOne({where: {id: userId}});
     
     return {userData, token};

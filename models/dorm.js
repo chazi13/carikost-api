@@ -3,14 +3,14 @@ module.exports = (sequelize, DataTypes) => {
   const dorm = sequelize.define('dorm', {
     name: DataTypes.STRING,
     type: DataTypes.ENUM('Campur', 'Putra', 'Putri'),
-    rooms_avaibel: DataTypes.INTEGER,
+    rooms_avaible: DataTypes.INTEGER,
     address: DataTypes.STRING,
     full_address: DataTypes.STRING,
     latitude: DataTypes.FLOAT,
     longitude: DataTypes.FLOAT,
     price: DataTypes.INTEGER,
-    width: DataTypes.DECIMAL(1,1),
-    lenght: DataTypes.DECIMAL(1,1),
+    width: DataTypes.FLOAT,
+    lenght: DataTypes.FLOAT,
     features: DataTypes.STRING,
     city: DataTypes.STRING,
     desc: DataTypes.STRING,
@@ -19,6 +19,14 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   dorm.associate = function(models) {
     // associations can be defined here
+    dorm.belongsTo(models.user, {
+      as: 'dormOwner',
+      foreignKey: 'owner',
+      attributes: {
+        exlude: ['password', 'createdAt', 'updatedAt']
+        // include: ['id', 'fullname', 'email', 'phone']
+      }
+    });
   };
   return dorm;
 };

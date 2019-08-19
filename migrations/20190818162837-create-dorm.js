@@ -9,46 +9,61 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       type: {
-        type: Sequelize.ENUM('Campur', 'Putra', 'Putri')
+        type: Sequelize.ENUM('Campur', 'Putra', 'Putri'),
+        allowNull: false
       },
-      rooms_avaibel: {
-        type: Sequelize.INTEGER
+      rooms_avaible: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 1
       },
       address: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       full_address: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       latitude: {
-        type: Sequelize.FLOAT
+        type: Sequelize.FLOAT,
+        allowNull: false
       },
       longitude: {
-        type: Sequelize.FLOAT
+        type: Sequelize.FLOAT,
+        allowNull: false
       },
       price: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       width: {
-        type: Sequelize.DECIMAL(1,1)
+        type: Sequelize.FLOAT,
+        allowNull: false
       },
       lenght: {
-        type: Sequelize.DECIMAL(1,1)
+        type: Sequelize.FLOAT,
+        allowNull: false
       },
       features: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       city: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       desc: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       images: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       owner: {
         type: Sequelize.INTEGER,

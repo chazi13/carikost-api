@@ -33,12 +33,20 @@ exports.login = async (req, res) => {
     // const User = user;
     try {
         const userData = await user.authenticate(username, password);
-        const dataReturn = await user.authorize(userData.id);
-        return res.status(200).json({
-            message: 'Login berhasil',
-            data: dataReturn,
-            action: '/profile'
-        });
+        if (userData) {
+            const dataReturn = await user.authorize(userData.id);
+            return res.status(200).json({
+                message: 'Login berhasil',
+                data: dataReturn,
+                action: '/profile'
+            });
+        } else {
+            return res.status(401).json({
+                message: 'Login gagal, email/telepon dan password tidak sesuai',
+                data: dataReturn,
+                action: '/profile'
+            });
+        }
     } catch (err) {
         return res.status(400).send(err);
     }
