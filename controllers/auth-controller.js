@@ -10,11 +10,17 @@ exports.register = async (req, res) => {
         let userData = await user.create(
             Object.assign(req.body, {password: passwordHashed})
         );
-        const dataReturn = await user.authorize(userData.id);
-        return res.status(201).json({
-            message: 'Register berhasil',
-            data: dataReturn,
-            action: '/profile'
+        if (userData) {
+            const dataReturn = await user.authorize(userData.id);
+            return res.status(201).json({
+                message: 'Register berhasil',
+                data: dataReturn,
+                action: '/profile'
+            });
+        }
+        return res.status(400).json({
+            message: 'Gagal melakukan register',
+            action: '/register'
         });
     } catch (err) {
         return res.status(400).send(err);
@@ -33,20 +39,21 @@ exports.login = async (req, res) => {
     // const User = user;
     try {
         const userData = await user.authenticate(username, password);
-        if (userData) {
+        if (userData !== false) {
             const dataReturn = await user.authorize(userData.id);
             return res.status(200).json({
+                succes: true,
                 message: 'Login berhasil',
                 data: dataReturn,
                 action: '/profile'
             });
-        } else {
-            return res.status(401).json({
-                message: 'Login gagal, email/telepon dan password tidak sesuai',
-                data: dataReturn,
-                action: '/profile'
-            });
         }
+        
+        return res.status(401).send({
+            succes: false,
+            message: 'Login gagal, email/telepon dan password tidak sesuai',
+            action: '/register'
+        });
     } catch (err) {
         return res.status(400).send(err);
     }

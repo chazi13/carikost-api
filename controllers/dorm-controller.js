@@ -3,18 +3,18 @@ const {dorm, user} = require('../models');
 exports.index = (req, res) => {
     dorm.findAll({
             attributes: [
-                'id', 'name', 'type', 'rooms_avaible', 'address', 'price', 'city', 'images'
+                'id', 'name', 'type', 'rooms_avaible', 'address', 'price', 'city', 'images', 'updatedAt'
             ]
         })
         .then(dorms => {
             if (dorms) {
-                res.status(200).json({
+                return res.status(200).json({
                     message: "Semua data kost",
                     data: dorms,
                     action: '/detail'
                 });
             } else {
-                res.status(500).json({
+                return res.status(500).json({
                     message: "Gagal menampilkan list kost",
                     action: '/'
                 });
@@ -31,7 +31,7 @@ exports.show = (req, res) => {
                 attributes: ['fullname', 'email', 'phone']
             }],
             attributes: {
-                exclude: ['createdAt', 'updatedAt']
+                exclude: ['createdAt']
             }
         })
         .then(dorm => {
