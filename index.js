@@ -4,6 +4,7 @@ require('express-group-routes');
 
 const AuthRoutes = require('./routes/auth-routes');
 const DormRoutes = require('./routes/dorm-routes');
+const BookRoutes = require('./routes/book-routes')
 
 const app = express();
 const PORT = process.env.PORT || 3000;
