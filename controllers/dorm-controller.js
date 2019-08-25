@@ -60,7 +60,7 @@ exports.store = (req, res) => {
 
     let images = [];
     filesUploaded.map(item => {
-        images.push(item.path)
+        images.push(`uploads/${item.filename}`)
     });
 
     Object.assign(req.body, {images: images.toString(), owner: req.user.userId});
