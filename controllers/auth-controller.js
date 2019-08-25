@@ -1,8 +1,16 @@
 const bcrypt = require('bcrypt');
+const { validationResult } = require('express-validator');
 
+const errorHandler = require('../middleware/error_handler');
 const { user } = require('../models');
 
 exports.register = async (req, res) => {
+    const err = validationResult(req);
+    console.log(err);
+    if (!err.isEmpty()) {
+        return errorHandler(res, 422, 'Error Input', err.errors);
+    }
+
     const { password } = req.body;
     const passwordHashed = bcrypt.hashSync(password, 10);
 
