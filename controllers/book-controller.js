@@ -65,6 +65,25 @@ exports.show = async (req, res) => {
         });
 }
 
+
+exports.showdetaillist = async (req, res) => {
+    const iduser = req.user.userId
+    booking.findOne({
+        where: {id: iduser}
+    }) .then(booking => {
+        if (booking) {
+            res.status(200).json({
+                message: "daftar kost per user berhasil diambil",
+                data: booking,
+            })
+        } else {
+            res.status(400).json({
+                message: "data kost per user tidak ditemukan"
+            })
+        }
+    })
+}
+
 exports.showdetail = async (req, res) => {
     booking.findOne({
         where: { id: req.params.id },
