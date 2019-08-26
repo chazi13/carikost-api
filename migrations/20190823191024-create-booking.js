@@ -34,7 +34,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       status: {
-        type: Sequelize.TINYINT
+        type: Sequelize.INTEGER(2)
       },
       createdAt: {
         allowNull: false,
