@@ -6,7 +6,7 @@ const { user } = require('../models');
 
 exports.register = async (req, res) => {
     const err = validationResult(req);
-    console.log(err);
+
     if (!err.isEmpty()) {
         return errorHandler(res, 422, 'Error Input', err.errors);
     }
@@ -16,26 +16,26 @@ exports.register = async (req, res) => {
 
     try {
         let userData = await user.create(
-            Object.assign(req.body, {password: passwordHashed})
+            {...req.body, password: passwordHashed}
+            // Object.assign(req.body, {password: passwordHashed})
         );
         if (userData) {
             const dataReturn = await user.authorize(userData.id);
-            return res.status(201).json({
-                message: 'Register berhasil',
-                data: dataReturn,
-                action: '/profile'
-            });
+            return res.status(201).json(dataReturn);
         }
-        return res.status(400).json({
-            message: 'Gagal melakukan register',
-            action: '/register'
-        });
+
     } catch (err) {
-        return res.status(400).send(err);
+        return errorHandler(res, 500, 'Internal Server Error', err);
     }
 }
 
 exports.login = async (req, res) => {
+    const err = validationResult(req);
+
+    if (!err.isEmpty()) {
+        return errorHandler(res, 422, 'Error Input', err.errors);
+    }
+
     const {email, password} = req.body;
 
     if (!email || !password) {
@@ -46,23 +46,14 @@ exports.login = async (req, res) => {
 
     // const User = user;
     try {
-        const userData = await user.authenticate(username, password);
+        const userData = await user.authenticate(email, password);
         if (userData !== false) {
             const dataReturn = await user.authorize(userData.id);
-            return res.status(200).json({
-                succes: true,
-                message: 'Login berhasil',
-                data: dataReturn,
-                action: '/profile'
-            });
+            return res.status(200).json(dataReturn);
         }
-        
-        return res.status(401).send({
-            succes: false,
-            message: 'Login gagal, email/telepon dan password tidak sesuai',
-            action: '/register'
-        });
+
+        return errorHandler(res, 422, 'Login failed', 'Email or password wrong');
     } catch (err) {
-        return res.status(400).send(err);
+        return errorHandler(res, 500, 'Internal Server Error', err);
     }
 }

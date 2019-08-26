@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 
+const errorHandler = require('../middleware/error_handler');
 const { booking, user, dorm} = require('../models/');
 
 exports.store = async (req, res) => {
@@ -8,29 +9,22 @@ exports.store = async (req, res) => {
     const { dorm_id, price, date_entries, duration } = req.body;
 
     data = {
-        dorm_id: dorm_id,
-        price: price,
-        date_entries: date_entries,
-        duration: duration,
+        dorm_id,
+        price,
+        date_entries,
+        duration,
         status: 1
     }
 
-    Object.assign(data, { user_id: req.user.userId })
-    console.log(req.body)
-    console.log(req.user.userId)
-    console.log(data)
-    booking.create(data)
+    // Object.assign(data, { user_id: req.user.userId })
+    booking.create({...data, user_id: req.user.userId})
     .then(booking => {
         if (booking) {
-            return res.status(201).json({
-                message: "bookinging Berhasil Ditambahkan",
-                data: booking
-            });
-        } else {
-            return res.status(500).json({
-                message: "Gagal Membuat bookinging"
-            });
+            return res.status(201).json(booking);
         }
+    })
+    .catch(err => {
+        return errorHandler(res, 500, 'Failed to booking kost', '');
     })
 }
 
@@ -50,19 +44,14 @@ exports.show = async (req, res) => {
             
         }
     })
-        .then(booking => {
-            if (booking) {
-                res.status(200).json({
-                    message: "daftar kost berhasil diambil",
-                    data: booking,
-                });
-            } else {
-                res.status(400).json({
-                    message: "Data kost tidak ditemukan",
-
-                });
-            }
-        });
+    .then(booking => {
+        if (booking) {
+            return res.status(200).json(booking);
+        }
+    })
+    .catch(err => {
+        return errorHandler(res, 422, 'Kost not found', '');
+    });
 }
 
 
@@ -70,17 +59,18 @@ exports.showdetaillist = async (req, res) => {
     const iduser = req.user.userId
     booking.findOne({
         where: {id: iduser}
-    }) .then(booking => {
+    }) 
+    .then(booking => {
         if (booking) {
-            res.status(200).json({
-                message: "daftar kost per user berhasil diambil",
-                data: booking,
-            })
+            return res.status(200).json(booking)
         } else {
             res.status(400).json({
                 message: "data kost per user tidak ditemukan"
             })
         }
+    })
+    .catch(err => {
+        return errorHandler(res, 422, 'Kost not found', '');
     })
 }
 
@@ -100,20 +90,14 @@ exports.showdetail = async (req, res) => {
           
         }
     })
-        .then(booking => {
-            if (booking) {
-                res.status(200).json({
-                    message: "daftar kost berhasil diambil",
-                    data: booking,
-                });
-            } else {
-                res.status(400).json({
-                    message: "Data kost tidak ditemukan",
-
-                });
-            }
-        });
-
+    .then(booking => {
+        if (booking) {
+            return res.status(200).json(booking);
+        }
+    })
+    .catch(err => {
+        return errorHandler(res, 422, 'Kost not found', '');
+    });
 }
 
 
@@ -133,29 +117,25 @@ exports.edit = async (req, res) => {
             exclude: ['createdAt'],
         }
     })
-        .then(booking => {
-            if (booking) {
-                booking.update({
-                    status: 2
-                }).then(booking => {
-                    if (booking) {
-                        res.status(200).json({
-                            message: "Data bookinging berhasil di update",
-                            data: booking
-                        });
-                    } else {
-                        res.status(400).json({
-                            message: "Data bookinging gagal di update",
-                            data: booking
-                        });
-                    }
-                })
-            } else {
-                res.status(400).json({
-                    message: "Data kost tidak ditemukan",
-
-                });
-            }
-        });
+    .then(booking => {
+        if (booking) {
+            booking.update({
+                status: 2
+            }).then(booking => {
+                if (booking) {
+                    return res.status(200).json(booking);
+                } else {
+                    return errorHandler(res, 422, 'Unable to update booking data');
+                    // res.status(400).json({
+                    //     message: "Data bookinging gagal di update",
+                    //     data: booking
+                    // });
+                }
+            })
+        }
+    })
+    .catch(err => {
+        return errorHandler(res, 422, 'Kost not found', '');
+    });
 
 }

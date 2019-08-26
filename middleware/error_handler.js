@@ -1,4 +1,5 @@
 const fetchData = (allError) => {
+    console.log(allError);
     return {
         field: allError[0].param,
         msg: allError[0].msg
@@ -6,10 +7,14 @@ const fetchData = (allError) => {
 }
 
 const errrHandler = (res, errStatus, message, data) => {
+    if (typeof data == 'object') {
+        data = fetchData(data);
+    }
+
     return res.status(errStatus).send({
-        status: errStatus,
+        statusCode: errStatus,
         message,
-        data: fetchData(data)
+        data
     });
 }
 

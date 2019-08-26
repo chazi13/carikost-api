@@ -1,4 +1,6 @@
+const errorHandler = require('../middleware/error_handler');
 const {dorm, user} = require('../models');
+
 
 exports.index = (req, res) => {
     dorm.findAll({
@@ -8,17 +10,13 @@ exports.index = (req, res) => {
         })
         .then(dorms => {
             if (dorms) {
-                return res.status(200).json({
-                    message: "Semua data kost",
-                    data: dorms,
-                    action: '/detail'
-                });
+                return res.status(200).json(dorms);
             } else {
-                return res.status(500).json({
-                    message: "Gagal menampilkan list kost",
-                    action: '/'
-                });
+                return errorHandler(res, 422, 'Kost not found', '');
             }
+        })
+        .catch(err => {
+            return errorHandler(res, 500, 'Internal server error', err);
         });
 }
 
@@ -36,17 +34,13 @@ exports.show = (req, res) => {
         })
         .then(dorm => {
             if (dorm) {
-                res.status(200).json({
-                    message: "Detail kost",
-                    data: dorm,
-                    action: '/detail'
-                });
+                return res.status(200).json(dorm);
             } else {
-                res.status(400).json({
-                    message: "Data kost tidak ditemukan",
-                    action: '/'
-                });
+                return errorHandler(res, 422, 'Kost not found', '');
             }
+        })
+        .catch(err => {
+            return errorHandler(res, 500, 'Internal server error', err);
         });
 }
 
@@ -63,21 +57,13 @@ exports.store = (req, res) => {
         images.push(`uploads/${item.filename}`)
     });
 
-    Object.assign(req.body, {images: images.toString(), owner: req.user.userId});
-    console.log(req.body);
-    dorm.create(req.body)
+    dorm.create({...req.body, images: images.toString(), owner: req.user.userId})
         .then(dorm => {
             if (dorm) {
-                return res.status(201).json({
-                    message: "Kost berhasil ditambahkan",
-                    data: dorm,
-                    action: '/'
-                });
-            } else {
-                return res.status(500).json({
-                    message: "Gagal menambahkan data kost",
-                    action: '/create'
-                });
+                return res.status(201).json(dorm);
             }
+        })
+        .catch(err => {
+            return errorHandler(res, 500, 'Internal server error', err);
         });
 }

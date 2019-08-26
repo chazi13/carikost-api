@@ -10,7 +10,7 @@ const app = express();
 app.group('/api/v1/dorms/', router => {
     router.get('/', DormController.index);
     router.get('/:id', DormController.show);
-    router.post('/', auth.authorize, upload.array('images', 20), DormController.store);
+    router.post('/', auth.authorize, auth.handleAuthError, upload.array('images', 20), DormController.store);
 });
 
 module.exports = app;

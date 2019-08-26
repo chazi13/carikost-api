@@ -17,8 +17,8 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  user.authenticate = async (username, password) => {
-    const userData = await user.findOne({where: {email: username}});
+  user.authenticate = async (email, password) => {
+    const userData = await user.findOne({where: {email}});
 
     if (await bcrypt.compare(password, userData.password)) {
       return userData;
@@ -28,7 +28,10 @@ module.exports = (sequelize, DataTypes) => {
 
   user.authorize = async (userId) => {
     const token = await jwt.sign({userId}, 'mamikost-key');
-    const userData = await user.findOne({where: {id: userId}});
+    const userData = await user.findOne({
+      where: {id: userId},
+      attributes: ['fullname', 'email', 'phone']
+    });
     
     return {userData, token};
   }

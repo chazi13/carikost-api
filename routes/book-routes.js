@@ -5,11 +5,13 @@ const auth = require('../middleware/authenticate');
 
 const BookController = require('../controllers/book-controller');
 
+app.use(auth.authorize);
+app.use(auth.handleAuthError());
 app.group('/api/v1', router => {
-    router.get('/booking/all', auth.authorize, BookController.show);
-    router.get('/booking/detail/:id', auth.authorize, BookController.showdetail);
-    router.post('/booking/add', auth.authorize, BookController.store);
-    router.patch('/booking/:id', auth.authorize, BookController.edit)
+    router.get('/booking/all', BookController.show);
+    router.get('/booking/detail/:id', BookController.showdetail);
+    router.post('/booking/add', BookController.store);
+    router.patch('/booking/:id', BookController.edit)
 })
 
 module.exports = app;

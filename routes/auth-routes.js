@@ -9,7 +9,7 @@ const AuthController = require('../controllers/auth-controller');
 
 app.group('/api/v1', router => {
     router.post('/register', validator.register, AuthController.register);
-    router.post('/login', AuthController.login);
+    router.post('/login', validator.login, AuthController.login);
 })
 
 module.exports = app;

@@ -14,4 +14,9 @@ exports.register = [
     }),
     check('phone').isNumeric().withMessage('Phone must contain only numeric'),
     check('password').isLength({min: 8}).withMessage('Min password lenght is 8')
+];
+
+exports.login = [
+    check('email').isEmail().withMessage('Please enter valid email'),
+    check('password').isLength({min: 8}).withMessage('Min password lenght is 8')
 ]
