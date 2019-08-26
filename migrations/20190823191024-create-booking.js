@@ -34,7 +34,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       status: {
-        type: Sequelize.INTEGER(2)
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
