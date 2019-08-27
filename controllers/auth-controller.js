@@ -47,7 +47,7 @@ exports.login = async (req, res) => {
     // const User = user;
     try {
         const userData = await user.authenticate(email, password);
-        if (userData !== false) {
+        if (userData) {
             const dataReturn = await user.authorize(userData.id);
             return res.status(200).json(dataReturn);
         }
