@@ -9,6 +9,7 @@ app.group('/api/v1/booking', router => {
     router.use(auth.authorize);
     router.use(auth.handleAuthError);
     router.get('/', BookController.show);
+    router.get('/orders', BookController.orders);
     router.get('/:id', BookController.showdetail);
     router.post('/', BookController.store);
     router.patch('/:id', BookController.edit)

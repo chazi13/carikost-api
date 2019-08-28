@@ -41,12 +41,16 @@ exports.show = async (req, res) => {
         }],
         attributes: {
             exclude: ['createdAt'],
-            
+        },
+        where: {
+            user_id: req.user.userId
         }
     })
     .then(booking => {
         if (booking) {
             return res.status(200).json(booking);
+        } else {
+            return errorHandler(res, 422, 'Kost not found', '');
         }
     })
     .catch(err => {
@@ -54,6 +58,40 @@ exports.show = async (req, res) => {
     });
 }
 
+exports.orders = async (req, res) => {
+    booking.findAll({
+        include: [{
+            model: dorm,
+            as: 'bookingDorm',
+            attributes: [
+                'id', 'name', 'type', 'rooms_avaible', 'address', 'price', 'city', 'images', 'updatedAt'
+            ],
+            where: {
+                owner: req.user.userId
+            }
+        }],
+        include: [{
+            model: user,
+            as: 'bookingCustomer',
+            attributes: [
+                'fullname', 'email', 'phone'
+            ],
+        }],
+        attributes: {
+            exclude: ['createdAt'],
+        },
+    })
+    .then(booking => {
+        if (booking) {
+            return res.status(200).json(booking);
+        } else {
+            return errorHandler(res, 422, 'Kost not found', '');
+        }
+    })
+    .catch(err => {
+        return errorHandler(res, 422, 'Kost not found', '');
+    });
+}
 
 // exports.showdetaillist = async (req, res) => {
 //     const iduser = req.user.userId
@@ -96,6 +134,8 @@ exports.showdetail = async (req, res) => {
     .then(booking => {
         if (booking) {
             return res.status(200).json(booking);
+        } else {
+            return errorHandler(res, 422, 'Kost not found', '');
         }
     })
     .catch(err => {

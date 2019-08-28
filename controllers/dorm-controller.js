@@ -30,6 +30,27 @@ exports.index = (req, res) => {
     });
 }
 
+exports.myDorms = (req, res) => {
+    dorm.findAll({
+        attributes: [
+            'id', 'name', 'type', 'rooms_avaible', 'address', 'price', 'city', 'images', 'updatedAt'
+        ],
+        where: {
+            owner: req.user.userId
+        }
+    })
+    .then(dorms => {
+        if (dorms) {
+            return res.status(200).json(dorms);
+        } else {
+            return errorHandler(res, 422, 'Kost not found', '');
+        }
+    })
+    .catch(err => {
+        return errorHandler(res, 500, 'Internal server error', err);
+    });
+}
+
 exports.show = (req, res) => {
     dorm.findOne({
             where: {id: req.params.id},
