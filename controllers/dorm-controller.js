@@ -3,21 +3,31 @@ const {dorm, user} = require('../models');
 
 
 exports.index = (req, res) => {
+    const urlQuery = req.query;
+
+    let query = {};
+    if (urlQuery) {
+        query = {
+            where: urlQuery
+        }
+    }
+
     dorm.findAll({
-            attributes: [
-                'id', 'name', 'type', 'rooms_avaible', 'address', 'price', 'city', 'images', 'updatedAt'
-            ]
-        })
-        .then(dorms => {
-            if (dorms) {
-                return res.status(200).json(dorms);
-            } else {
-                return errorHandler(res, 422, 'Kost not found', '');
-            }
-        })
-        .catch(err => {
-            return errorHandler(res, 500, 'Internal server error', err);
-        });
+        attributes: [
+            'id', 'name', 'type', 'rooms_avaible', 'address', 'price', 'city', 'images', 'updatedAt'
+        ],
+        ...query
+    })
+    .then(dorms => {
+        if (dorms) {
+            return res.status(200).json(dorms);
+        } else {
+            return errorHandler(res, 422, 'Kost not found', '');
+        }
+    })
+    .catch(err => {
+        return errorHandler(res, 500, 'Internal server error', err);
+    });
 }
 
 exports.show = (req, res) => {
