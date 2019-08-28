@@ -13,7 +13,7 @@ exports.store = async (req, res) => {
         price,
         date_entries,
         duration,
-        status: 1
+        status: 0
     }
 
     // Object.assign(data, { user_id: req.user.userId })
@@ -24,7 +24,8 @@ exports.store = async (req, res) => {
         }
     })
     .catch(err => {
-        return errorHandler(res, 500, 'Failed to booking kost', '');
+        // return res.send(err);
+        return errorHandler(res, 500, 'Failed to booking kost');
     })
 }
 
@@ -32,12 +33,11 @@ exports.store = async (req, res) => {
 exports.show = async (req, res) => {
     booking.findAll({
         include: [{
-            model: user,
-            as: 'bookingCustomer',
-            attributes: ['fullname', 'email', 'phone']
-        }, {
             model: dorm,
             as: 'bookingDorm',
+            attributes: [
+                'id', 'name', 'type', 'rooms_avaible', 'address', 'price', 'city', 'images', 'updatedAt'
+            ]
         }],
         attributes: {
             exclude: ['createdAt'],
@@ -55,24 +55,24 @@ exports.show = async (req, res) => {
 }
 
 
-exports.showdetaillist = async (req, res) => {
-    const iduser = req.user.userId
-    booking.findOne({
-        where: {id: iduser}
-    }) 
-    .then(booking => {
-        if (booking) {
-            return res.status(200).json(booking)
-        } else {
-            res.status(400).json({
-                message: "data kost per user tidak ditemukan"
-            })
-        }
-    })
-    .catch(err => {
-        return errorHandler(res, 422, 'Kost not found', '');
-    })
-}
+// exports.showdetaillist = async (req, res) => {
+//     const iduser = req.user.userId
+//     booking.findOne({
+//         where: {id: iduser}
+//     }) 
+//     .then(booking => {
+//         if (booking) {
+//             return res.status(200).json(booking)
+//         } else {
+//             res.status(400).json({
+//                 message: "data kost per user tidak ditemukan"
+//             })
+//         }
+//     })
+//     .catch(err => {
+//         return errorHandler(res, 422, 'Kost not found', '');
+//     })
+// }
 
 exports.showdetail = async (req, res) => {
     booking.findOne({
@@ -84,6 +84,9 @@ exports.showdetail = async (req, res) => {
         }, {
             model: dorm,
             as: 'bookingDorm',
+            attributes: [
+                'id', 'name', 'type', 'rooms_avaible', 'address', 'price', 'city', 'images', 'updatedAt'
+            ]
         }],
         attributes: {
             exclude: ['createdAt'],
@@ -103,26 +106,33 @@ exports.showdetail = async (req, res) => {
 
 
 exports.edit = async (req, res) => {
+    const urlQuery = req.query;
+
     booking.findOne({
-        where: { id: req.params.id },
-        include: [{
-            model: user,
-            as: 'bookingCustomer',
-            attributes: ['fullname', 'email', 'phone']
-        }, {
-            model: dorm,
-            as: 'bookingDorm',
-        }],
-        attributes: {
-            exclude: ['createdAt'],
-        }
+        where: { id: req.params.id }
     })
     .then(booking => {
         if (booking) {
-            booking.update({
-                status: 2
-            }).then(booking => {
+            booking.update(urlQuery).then(booking => {
                 if (booking) {
+                    if (urlQuery.status == 1) {
+                        dorm.findOne({
+                            where: {id: booking.dorm_id}
+                        })
+                        .then(async dorm => {
+                            try {
+                                await dorm.update({
+                                    rooms_avaible: (dorm.rooms_avaible - 1)
+                                });
+                            } catch (err) {
+                                console.log(err);
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        });
+                    }
+
                     return res.status(200).json(booking);
                 } else {
                     return errorHandler(res, 422, 'Unable to update booking data');
@@ -137,5 +147,4 @@ exports.edit = async (req, res) => {
     .catch(err => {
         return errorHandler(res, 422, 'Kost not found', '');
     });
-
 }
