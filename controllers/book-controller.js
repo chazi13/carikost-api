@@ -69,8 +69,8 @@ exports.orders = async (req, res) => {
             where: {
                 owner: req.user.userId
             }
-        }],
-        include: [{
+        },
+        {
             model: user,
             as: 'bookingCustomer',
             attributes: [
