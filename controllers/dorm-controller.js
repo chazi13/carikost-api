@@ -10,7 +10,7 @@ exports.index = (req, res) => {
         query = {
             where: {
                 city: {
-                    [sequelize.Op.like]: urlQuery.city
+                    [sequelize.Op.like]: `%${urlQuery.city}$`
                 }
             }
         }
