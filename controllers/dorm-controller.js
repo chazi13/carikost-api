@@ -1,6 +1,6 @@
 const errorHandler = require('../middleware/error_handler');
 const {dorm, user} = require('../models');
-
+const sequelize = require('sequelize');
 
 exports.index = (req, res) => {
     const urlQuery = req.query;
@@ -63,9 +63,18 @@ exports.show = (req, res) => {
                 exclude: ['createdAt']
             }
         })
-        .then(dorm => {
-            if (dorm) {
-                return res.status(200).json(dorm);
+        .then(async detailDorm => {
+            const otherDorms = await dorm.findAll({
+                where: {
+                    id: {
+                        [sequelize.Op.ne]: req.params.id
+                    }
+                },
+                limit: 5
+            });
+
+            if (detailDorm && otherDorms) {
+                return res.status(200).json({detailDorm, otherDorms});
             } else {
                 return errorHandler(res, 422, 'Kost not found', '');
             }
