@@ -6,9 +6,13 @@ exports.index = (req, res) => {
     const urlQuery = req.query;
 
     let query = {};
-    if (urlQuery) {
+    if (urlQuery.city) {
         query = {
-            where: urlQuery
+            where: {
+                city: {
+                    [sequelize.Op.like]: urlQuery.city
+                }
+            }
         }
     }
 
